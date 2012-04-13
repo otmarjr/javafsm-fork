@@ -1,0 +1,97 @@
+<project name="JavaFSM" default="compile" basedir=".">
+
+	<property file="build.properties" />
+
+
+	<!-- ================================================================== -->
+	<!-- CLASS PATHS                                                            -->
+	<!-- ================================================================== -->
+	<path id="classpath">
+		<fileset dir="${lib}">
+			<include name="**.jar" />
+		</fileset>
+	</path>
+
+	<path id="run.classpath">
+		<path refid="classpath" />
+		<dirset dir="${build.classes}" />
+	</path>
+
+
+	<path id="junit.classpath">
+		<path refid="run.classpath" />
+		<fileset dir="${lib}">
+			<include name="**.jar" />
+		</fileset>
+	</path>
+
+	<!-- ================================================================== -->
+	<!-- PREPARE                                                            -->
+	<!-- ================================================================== -->
+	<target name="prepare" description="prepare the output directory.">
+		<mkdir dir="${build.classes}" />
+		<mkdir dir="${build.test}" />
+		<mkdir dir="${dist}" />
+	</target>
+
+	<!-- ================================================================== -->
+	<!-- COMPILE                                                            -->
+	<!-- ================================================================== -->
+	<target name="compile" depends="prepare">
+		<!-- Compile the java code from ${src} into ${build} -->
+		<javac srcdir="${src.java}" destdir="${build.classes}" debug="on">
+			<classpath>
+				<path refid="classpath" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="compile-tests" depends="prepare">
+		<!-- Compile the java code from ${src} into ${build} -->
+		<javac srcdir="${src.test}" destdir="${build.test}" debug="on">
+			<classpath>
+				<path refid="junit.classpath" />
+			</classpath>
+		</javac>
+	</target>
+
+	<!-- ================================================================== -->
+	<!-- TEST                                                              -->
+	<!-- ================================================================== -->
+	<!-- TODO -->
+
+	<!-- ================================================================== -->
+	<!-- PACKAGE                                                            -->
+	<!-- ================================================================== -->
+	<target name="package" depends="compile">
+		<!-- Create the distribution directory -->
+		<jar jarfile="${dist}/${jar}" basedir="${build}" />
+	</target>
+
+	<!-- ================================================================== -->
+	<!-- CLEAN                                                              -->
+	<!-- ================================================================== -->
+	<target name="clean">
+		<delete dir="${build}" />
+		<delete dir="${dist}" />
+	</target>
+
+	<!-- ================================================================== -->
+	<!-- JAVADOC                                                              -->
+	<!-- ================================================================== -->
+	<target name="javadoc">
+		<mkdir dir="${dist.javadoc}" />
+		<javadoc sourcepath="${src.java}" destdir="${dist.javadoc}" linksource="true">
+		</javadoc>
+	</target>
+
+	<!-- ================================================================== -->
+	<!-- DIST                                                              -->
+	<!-- ================================================================== -->
+	<target name="dist" depends="package,javadoc">
+		<zip basedir="${dist}" destfile="${jar.name}-${version}.zip" />
+	</target>
+
+
+</project>
+

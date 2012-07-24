@@ -4,9 +4,72 @@
 	<groupId>tecacet-fsm</groupId>
 	<artifactId>tecacet-fsm</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	
+	 <properties>
+        <compileSource>1.6</compileSource>
+        <compileTarget>1.6</compileTarget>
+        <targetJdk>1.6</targetJdk>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+	<scm>
+		<connection>scm:svn:https://svn.code.sf.net/p/javafsm/code/trunk/JavaFSM</connection>
+		<developerConnection>scm:svn:https://svn.code.sf.net/p/javafsm/code/trunk/JavaFSM</developerConnection>
+		<tag>HEAD</tag>
+		<url>leave-this-undefined</url>
+	</scm>
 
 	<build>
 		<plugins>
+			<!-- Java compiler -->
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <showDeprecation>true</showDeprecation>
+                    <source>${compileSource}</source>
+                    <target>${compileTarget}</target>
+                    <!-- <compilerArgument>-Xlint:all</compilerArgument> 
+                        <showWarnings>true</showWarnings> -->
+                </configuration>
+            </plugin>
+             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <finalName>${project.name}</finalName>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <mainClass>${mainClass}</mainClass>
+                        </manifest>
+                        <manifestEntries>
+                            <SCM-Revision>r${buildNumber}</SCM-Revision>
+                            <Implementation-Version>${project.version}-r${buildNumber}</Implementation-Version>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>create</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<doCheck>true</doCheck>
+					<doUpdate>true</doUpdate>
+				</configuration>
+			</plugin>
+			<!--  Cobertura coverage report -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>

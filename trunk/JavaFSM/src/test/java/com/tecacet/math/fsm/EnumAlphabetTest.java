@@ -18,12 +18,8 @@ public class EnumAlphabetTest {
         EnumAlphabet<Switch> alphabet = new EnumAlphabet<Switch>(Switch.class);
         assertTrue(alphabet.contains(Switch.OFF));
         assertTrue(alphabet.contains(Switch.ON));
-        //assertFalse(alphabet.contains("ax"));
-        //alphabet.addSymbol('<');
-        //assertTrue(alphabet.contains('<'));
         Set<Switch> ac = alphabet.getSymbolSet();
         assertEquals(2, ac.size());
-        //assertEquals("01", ac.toString());
     }
 
 }

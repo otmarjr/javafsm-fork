@@ -17,7 +17,7 @@ public class DFA<S, C> implements DeterministicFiniteAutomaton<S, C> {
         @Override
         public DFABuilder<S, C> setInitialState(S initialState) throws DFABuilderException {
             if (null != DFA.this.initialState) {
-                throw new DFABuilderException("Initial state already set");
+                throw new DFABuilderException("Initial state already set.");
             }
             DFA.this.initialState = initialState;
             states.add(initialState);
@@ -39,7 +39,7 @@ public class DFA<S, C> implements DeterministicFiniteAutomaton<S, C> {
         @Override
         public DeterministicFiniteAutomaton<S, C> build() throws DFABuilderException {
             if (DFA.this.getInitialState() == null) {
-                throw new DFABuilderException("Initial state is not specficied");
+                throw new DFABuilderException("Initial state is not specficied.");
             }
             if (DFA.this.finalStates.isEmpty()) {
                 throw new DFABuilderException("There must be at least one final state");

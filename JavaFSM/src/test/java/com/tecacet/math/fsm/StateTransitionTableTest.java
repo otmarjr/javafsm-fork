@@ -33,6 +33,6 @@ public class StateTransitionTableTest {
             assertEquals("There is no transition from state Rejected on symbol Approve.", ite.getMessage());
         }
         
-        System.out.println(table.toString());
+        System.out.println(table.getDetails());
     }
 }

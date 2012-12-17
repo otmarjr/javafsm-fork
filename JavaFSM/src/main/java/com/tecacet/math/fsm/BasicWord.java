@@ -57,4 +57,9 @@ public class BasicWord<C> implements Word<C> {
         }
         return new BasicWord<Character>(ac);
     }
+    
+    @Override
+    public String toString() {
+    	return String.valueOf(symbols.toArray(new Character[symbols.size()]));
+    }
 }

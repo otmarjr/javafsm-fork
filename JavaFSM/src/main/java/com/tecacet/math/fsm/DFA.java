@@ -1,149 +1,146 @@
 package com.tecacet.math.fsm;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 
-public class DFA<S, C> implements DeterministicFiniteAutomaton<S, C> {
-    private final Alphabet<C> alphabet;
-    private S initialState = null;
-    private StateTransitionTable<S, C> transitionTable = new StateTransitionTable<S, C>();
-    private Set<S> states = new LinkedHashSet<S>();
-    private Set<S> finalStates = new HashSet<S>();
+public class DFA<S, C> extends AbstractFiniteAutomaton<S, C> implements
+		DeterministicFiniteAutomaton<S, C> {
 
-    private class PrivateDFABuilder implements DFABuilder<S, C> {
+	private StateTransitionTable<S, C> transitionTable = new StateTransitionTable<S, C>();
 
-        @Override
-        public DFABuilder<S, C> setInitialState(S initialState) throws DFABuilderException {
-            if (null != DFA.this.initialState) {
-                throw new DFABuilderException("Initial state already set.");
-            }
-            DFA.this.initialState = initialState;
-            states.add(initialState);
-            return this;
-        }
+	private class PrivateDFABuilder implements DFABuilder<S, C> {
 
-        @Override
-        public DFABuilder<S, C> addFinalState(S state) throws DFABuilderException {
-            DFA.this.addFinalState(state);
-            return this;
-        }
+		@Override
+		public DFABuilder<S, C> setInitialState(S initialState)
+				throws FABuilderException {
+			if (null != DFA.this.initialState) {
+				throw new FABuilderException("Initial state already set.");
+			}
+			DFA.this.initialState = initialState;
+			states.add(initialState);
+			return this;
+		}
 
-        @Override
-        public DFABuilder<S, C> addTransition(S from, S to, C c) throws DFABuilderException {
-            DFA.this.addTransition(from, to, c);
-            return this;
-        }
+		@Override
+		public DFABuilder<S, C> addFinalState(S state)
+				throws FABuilderException {
+			DFA.this.addFinalState(state);
+			return this;
+		}
 
-        @Override
-        public DeterministicFiniteAutomaton<S, C> build() throws DFABuilderException {
-            if (DFA.this.getInitialState() == null) {
-                throw new DFABuilderException("Initial state is not specficied.");
-            }
-            if (DFA.this.finalStates.isEmpty()) {
-                throw new DFABuilderException("There must be at least one final state");
-            }
-            return DFA.this;
-        }
-    }
+		@Override
+		public DFABuilder<S, C> addTransition(S from, S to, C c)
+				throws FABuilderException {
+			DFA.this.addTransition(from, to, c);
+			return this;
+		}
 
-    private DFA(Alphabet<C> a) {
-        this.alphabet = a;
-    }
+		@Override
+		public DeterministicFiniteAutomaton<S, C> build()
+				throws FABuilderException {
+			if (DFA.this.getInitialState() == null) {
+				throw new FABuilderException("Initial state is not specficied.");
+			}
+			if (DFA.this.finalStates.isEmpty()) {
+				throw new FABuilderException(
+						"There must be at least one final state");
+			}
+			return DFA.this;
+		}
+	}
 
-    @Override
-    public Alphabet<C> getAlphabet() {
-        return alphabet;
-    }
+	private DFA(Alphabet<C> alphabet) {
+		super(alphabet);
+	}
 
-    private void addFinalState(S state) {
-        states.add(state);
-        finalStates.add(state);
-    }
+	private void addTransition(S from, S to, C c) throws FABuilderException {
+		if (!containsState(from)) {
+			throw new FABuilderException(String.format(
+					"State %s does not exist", from));
+		}
+		if (!alphabet.contains(c)) {
+			throw new FABuilderException(String.format(
+					"%s is not a valid alphabet symbol.", c));
+		}
+		states.add(to);
+		transitionTable.addTransition(from, c, to);
+	}
 
-    protected boolean containsState(S state) {
-        return (states != null && states.contains(state));
-    }
+	@Override
+	public S getNextState(S from, C c) throws FAException {
+		if (!containsState(from)) {
+			throw new InvalidStateException(String.format(
+					"State %s does not exist", from));
+		}
+		return delta(from, c);
+	}
 
-    private void addTransition(S from, S to, C c) throws DFABuilderException {
-        if (!containsState(from)) {
-            throw new DFABuilderException(String.format("State %s does not exist", from));
-        }
-        if (!alphabet.contains(c)) {
-            throw new DFABuilderException(String.format("%s is not a valid alphabet symbol.", c));
-        }
-        states.add(to);
-        transitionTable.addTransition(from, c, to);
-    }
+	@Override
+	public S getNextState(S from, Word<C> word)
+			throws InvalidTransitionException {
+		return delta_bar(from, word);
+	}
 
-    @Override
-    public S getNextState(S from, C c) throws DFAException {
-        if (!containsState(from)) {
-            throw new InvalidStateException(String.format("State %s does not exist", from));
-        }
-        return delta(from, c);
-    }
+	@Override
+	public boolean accepts(Word<C> word) throws InvalidTransitionException {
+		return isFinal(delta_bar(initialState, word));
+	}
 
-    @Override
-    public S getNextState(S from, Word<C> word) throws InvalidTransitionException {
-        return delta_bar(from, word);
-    }
+	@Override
+	public List<S> getPath(Word<C> word) throws InvalidTransitionException {
+		List<S> path = new LinkedList<S>();
+		S state = getInitialState();
+		path.add(state);
+		for (C symbol : word.asList()) {
+			state = delta(state, symbol);
+			path.add(state);
+		}
+		return path;
+	}
 
-    @Override
-    public boolean accepts(Word<C> word) throws InvalidTransitionException {
-        return isFinal(delta_bar(initialState, word));
-    }
+	/* Internal transition function */
+	protected S delta(S from, C symbol) throws InvalidTransitionException {
+		return transitionTable.getNextState(from, symbol);
+	}
 
-    /* Internal transition function */
-    protected S delta(S from, C symbol) throws InvalidTransitionException {
-        return transitionTable.getNextState(from, symbol);
-    }
+	private S delta_bar(S from, Word<C> word) throws InvalidTransitionException {
+		if (word.length() == 0) {
+			return from;
+		}
+		if (word.length() == 1) {
+			return delta(from, word.symbolAt(0));
+		} else {
+			return delta_bar(delta(from, word.symbolAt(0)), word.substring(1));
+		}
+	}
 
-    private S delta_bar(S from, Word<C> word) throws InvalidTransitionException {
-        if (word.length() == 0) {
-            return from;
-        }
-        if (word.length() == 1) {
-            return delta(from, word.symbolAt(0));
-        } else {
-            return delta_bar(delta(from, word.symbolAt(0)), word.substring(1));
-        }
-    }
+	
+	private DFABuilder<S, C> buidler = new PrivateDFABuilder();
 
-    protected boolean isFinal(S zState) {
-        return finalStates.contains(zState);
-    }
+	public static <S, C> DFABuilder<S, C> newDFA(Alphabet<C> alphabet) {
+		return new DFA<S, C>(alphabet).buidler;
+	}
 
-    public String showTransitionDiagram() throws DFAException {
-        StringBuilder sb = new StringBuilder();
-        sb.append(" | ");
-        for (S state : states) {
-            sb.append(state + " | ");
-        }
-        sb.append("\n");
+	public String showTransitionDiagram() throws FAException {
+		StringBuilder sb = new StringBuilder();
+		sb.append(" | ");
+		for (S state : states) {
+			sb.append(state + " | ");
+		}
+		sb.append("\n");
 
-        // create rows 
-        Collection<C> symbols = alphabet.getSymbolSet();
-        for (C symbol : symbols) {
-            sb.append(symbol + "| ");
-            for (S state : states) {
-                S nextState = getNextState(state, symbol);
-                sb.append(nextState + " | ");
-            }
-            sb.append("\n");
-        }
-        return sb.toString();
-    }
+		// create rows
+		Collection<C> symbols = alphabet.getSymbolSet();
+		for (C symbol : symbols) {
+			sb.append(symbol + "| ");
+			for (S state : states) {
+				S nextState = getNextState(state, symbol);
+				sb.append(nextState + " | ");
+			}
+			sb.append("\n");
+		}
+		return sb.toString();
+	}
 
-    @Override
-    public S getInitialState() {
-        return initialState;
-    }
-
-    private DFABuilder<S, C> buidler = new PrivateDFABuilder();
-
-    public static <S, C> DFABuilder<S, C> newDFA(Alphabet<C> alphabet) {
-        return new DFA<S, C>(alphabet).buidler;
-    }
 }

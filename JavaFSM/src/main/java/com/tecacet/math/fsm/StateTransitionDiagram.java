@@ -10,6 +10,6 @@ package com.tecacet.math.fsm;
  */
 public interface StateTransitionDiagram<S,C> {
 
-    S getNextState(S from, C symbol) throws DFAException;
+    S getNextState(S from, C symbol) throws FAException;
 
 }

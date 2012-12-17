@@ -1,6 +1,7 @@
 package com.tecacet.math.fsm;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,24 +22,24 @@ public class SimpleMooreMachine<S, CI, CO> implements MooreMachine<S, CI, CO> {
 
 		@Override
 		public DFABuilder<S, CI> setInitialState(S initialState)
-				throws DFABuilderException {
-			return delegate.setInitialState(initialState);
+				throws FABuilderException {
+			return (DFABuilder<S, CI>) delegate.setInitialState(initialState);
 		}
 
 		@Override
 		public DFABuilder<S, CI> addFinalState(S state)
-				throws DFABuilderException {
-			return delegate.addFinalState(state);
+				throws FABuilderException {
+			return (DFABuilder<S, CI>) delegate.addFinalState(state);
 		}
 
 		@Override
 		public DFABuilder<S, CI> addTransition(S from, S to, CI c)
-				throws DFABuilderException {
-			return delegate.addTransition(from, to, c);
+				throws FABuilderException {
+			return (DFABuilder<S, CI>) delegate.addTransition(from, to, c);
 		}
 
 		@Override
-		public MooreMachine<S, CI, CO> build() throws DFABuilderException {
+		public MooreMachine<S, CI, CO> build() throws FABuilderException {
 			dfa = delegate.build();
 			return SimpleMooreMachine.this;
 		}
@@ -70,7 +71,7 @@ public class SimpleMooreMachine<S, CI, CO> implements MooreMachine<S, CI, CO> {
 		return dfa.getAlphabet();
 	}
 
-	public boolean accepts(Word<CI> word) throws DFAException {
+	public boolean accepts(Word<CI> word) throws FAException {
 		return dfa.accepts(word);
 	}
 
@@ -78,12 +79,17 @@ public class SimpleMooreMachine<S, CI, CO> implements MooreMachine<S, CI, CO> {
 		return dfa.getInitialState();
 	}
 
-	public S getNextState(S from, CI symbol) throws DFAException {
+	public S getNextState(S from, CI symbol) throws FAException {
 		return dfa.getNextState(from, symbol);
 	}
 
-	public S getNextState(S from, Word<CI> word) throws DFAException {
+	public S getNextState(S from, Word<CI> word) throws FAException {
 		return dfa.getNextState(from, word);
+	}
+	
+	@Override
+	public List<S> getPath(Word<CI> word) throws InvalidTransitionException {
+		return dfa.getPath(word);
 	}
 
 	private MooreMachineBuilder<S, CI, CO> builder = new SimpleMooreMachineBuilder();
@@ -96,4 +102,6 @@ public class SimpleMooreMachine<S, CI, CO> implements MooreMachine<S, CI, CO> {
 		return machine.builder;
 
 	}
+
+	
 }

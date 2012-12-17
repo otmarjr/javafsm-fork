@@ -8,5 +8,5 @@ public interface FiniteAutomaton<C> {
      * A word is <i>accepted</i> by the FA if it causes the FA 
      * to transition from the initial state q0 to a final state 
     */
-    boolean accepts(Word<C> word) throws DFAException;
+    boolean accepts(Word<C> word) throws FAException;
 }

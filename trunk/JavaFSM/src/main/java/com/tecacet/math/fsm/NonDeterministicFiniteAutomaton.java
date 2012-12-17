@@ -1,9 +1,21 @@
 package com.tecacet.math.fsm;
 
-public interface NonDeterministicFiniteAutomaton<S> extends FiniteAutomaton<S> {
-    
-    S[] getNextStates(S q, char c); // transition function delta
+import java.util.List;
+import java.util.Set;
 
-    S[] getStates(S q, String s); // The extended transition function delta
+public interface NonDeterministicFiniteAutomaton<S, C> extends
+		FiniteAutomaton<C> {
+
+	/**
+	 * transition function delta
+	 * 
+	 * @param q
+	 * @param c
+	 * @return
+	 * @throws InvalidTransitionException
+	 */
+	Set<S> getNextStates(S q, C c) throws InvalidTransitionException;
+
+	List<Set<S>> getPath(Word<C> word);
 
 }

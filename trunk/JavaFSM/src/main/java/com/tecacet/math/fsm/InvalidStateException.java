@@ -5,7 +5,7 @@ package com.tecacet.math.fsm;
  *
  */
 @SuppressWarnings("serial")
-public class InvalidStateException extends DFAException {
+public class InvalidStateException extends FAException {
 
     public InvalidStateException(String message) {
         super(message);

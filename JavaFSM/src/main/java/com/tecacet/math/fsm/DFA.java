@@ -71,7 +71,7 @@ public class DFA<S, C> extends AbstractFiniteAutomaton<S, C> implements
 	public S getNextState(S from, C c) throws FAException {
 		if (!containsState(from)) {
 			throw new InvalidStateException(String.format(
-					"State %s does not exist", from));
+					"State %s does not exist.", from));
 		}
 		return delta(from, c);
 	}

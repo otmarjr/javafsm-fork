@@ -23,15 +23,15 @@ public class DFATest {
 				.addTransition("B", "A", '1').addTransition("B", "B", '0');
 		DeterministicFiniteAutomaton<String, Character> machine = builder
 				.build();
-		String s = ((DFA<String,Character>) machine).showTransitionDiagram();
+		String s = ((DFA<String, Character>) machine).showTransitionDiagram();
 		System.out.println(s);
 
 		assertTrue(machine.accepts(BasicWord.fromString("1011")));
 		assertTrue(machine.accepts(BasicWord.fromString("0010000011000101")));
 		assertFalse(machine.accepts(BasicWord.fromString("1111")));
 		assertFalse(machine.accepts(BasicWord.fromString("1010101")));
-		
-		List<String> path = machine.getPath(BasicWord.fromString("1011")); 
+
+		List<String> path = machine.getPath(BasicWord.fromString("1011"));
 		assertEquals("[A, B, B, A, B]", path.toString());
 	}
 
@@ -55,26 +55,31 @@ public class DFATest {
 		// TODO test
 		DeterministicFiniteAutomaton<String, Character> machine = builder
 				.build();
-		String s = ((DFA<String,Character>) machine).showTransitionDiagram();
+
+		String s = ((DFA<String, Character>) machine).showTransitionDiagram();
 		System.out.println(s);
+		try {
+			machine.getNextState("X", 'c');
+			fail();
+		} catch (InvalidStateException ise) {
+			assertEquals("State X does not exist.", ise.getMessage());
+		}
 	}
 
 	@Test
 	public void testBuilderException() throws FABuilderException {
 		DFABuilder<String, Character> builder = DFA
 				.newDFA(new CharacterAlphabet(new char[] { 'a', 'b', 'c' }));
-		
+
 		try {
 			builder.build();
 			fail();
-		} catch(FABuilderException e) {
+		} catch (FABuilderException e) {
 			assertEquals("Initial state is not specficied.", e.getMessage());
 		}
-		
+
 		builder.setInitialState("S0");
 
-		
-		
 		try {
 			builder.setInitialState("S0");
 			fail();

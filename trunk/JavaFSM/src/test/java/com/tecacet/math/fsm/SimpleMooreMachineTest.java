@@ -24,6 +24,12 @@ public class SimpleMooreMachineTest {
 		assertTrue(machine.accepts(BasicWord.fromString("0010000011000101")));
 		assertFalse(machine.accepts(BasicWord.fromString("1111")));
 		assertFalse(machine.accepts(BasicWord.fromString("1010101")));
+		
+		assertEquals("A", machine.getInitialState());
+		
+		String nextState = 
+				machine.getNextState("A", BasicWord.fromString("001"));
+		assertEquals("B", nextState);
 
 	}
 

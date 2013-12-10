@@ -51,6 +51,12 @@ public class NFA<S, C> extends AbstractFiniteAutomaton<S, C> implements
 			}
 			return NFA.this;
 		}
+
+		@Override
+		public NFABuilder<S, C> addEpsilonTransition(S from, S to) {
+			NFA.this.addTransition(from, to, null);
+			return this;
+		}
 	}
 
 	private NFA(Alphabet<C> alphabet) {
@@ -127,10 +133,17 @@ public class NFA<S, C> extends AbstractFiniteAutomaton<S, C> implements
 	public Set<S> getNextStates(S state, C symbol) {
 		Set<S> states = transitions.get(new Pair<S, C>(state, symbol));
 		if (states == null) {
-			return new HashSet<S>();
+			states=  new HashSet<S>();
+		}
+		//add epsilon transitions
+		Set<S> epsilonStates = transitions.get(new Pair<S, C>(state, null));
+		if (epsilonStates != null) {
+			states.addAll(epsilonStates);
 		}
 		return states;
 	}
+	
+	
 
 	private NFABuilder<S, C> buidler = new PrivateNFABuilder();
 

@@ -16,7 +16,7 @@ public class NFABuilderTest {
 		builder.setInitialState("A").addFinalState("C")
 				.addTransition("A", "A", '0').addTransition("A", "B", '1')
 				.addTransition("B", "C", '0').addTransition("C", "B", '1')
-				.addEpsilonTransition("C", "A").addTransition("B", "A", '0');
+				.addTransition("B", "A", '0');
 		NonDeterministicFiniteAutomaton<String, Character> machine = builder
 				.build();
 		assertFalse(machine.accepts(BasicWord.fromString("10011010")));
